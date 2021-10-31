@@ -11,7 +11,10 @@ adapting and remembering about it.
 Basically it's an API with integration of a database(SQLite3) and has only 1 table(Product). It's more an exercise then a big and functional project, to understand better the basics of that INCREDIBLE framework.
 
 ---
-## How to run the Program
+## How to Run
 
+After install all the requirements found inside Pipfile, just run the following command inside your terminal inside the main project's directory:
+
+<code>uvicorn main:api --reload</code>
 
 ---

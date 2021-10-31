@@ -1,22 +1,62 @@
 
-from fastapi import FastAPI
+from typing import List
 
-# Library to create Models and validations
-from pydantic import BaseModel
+from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy.orm import Session
+
+import crud
+from Database import models
+from Database.database import SessionLocal, engine
+from Pydantic import schemas
 
 
-# Instance of api
+# Create all tables mapped with ORM
+models.Base.metadata.create_all(bind=engine)
+
+
+# Instance of FastAPI
 api = FastAPI()
 
 
-# Product Model
-class Product(BaseModel):
-    Nome: str
-    Descricao: str
-    Preco: float
+# Dependency of Session's Database
+# With that, the entire API will consume only one session per request
+# and closes it right after the query's result
+
+# Obs: the function uses 'try:' because if happens to occur some error
+# in the middle, and error output or exception(if included) will raise
+# Also, the 'finally:' ensures that the connection wil lbe closed in the
+# end of function get_db()
+def get_db():
+    # Creates a session query
+    db = SessionLocal()
+    try:
+        # Wait until it's used
+        yield db
+    finally:
+        # Close the connection
+        db.close()
 
 
-# Test Route of Product.Model
-@api.get('/list/all_products')
-def get_all_products():
+# Create object Product
+@api.post("/products/", response_model=schemas.Product)
+def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)):
+    db_product = crud.get_product_by_name(db, product_name=product.name)
+    if db_product:
+        raise HTTPException(status_code=400, detail="Product's name already registered")
+    return crud.create_product(db=db, product=product)
 
+
+# Get all Products
+@api.get("/products/", response_model=List[schemas.Product])
+def read_products(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    all_products = crud.get_all_products(db, skip=skip, limit=limit)
+    return all_products
+
+
+# Get a Product by id
+@api.get("/products/{product_id}", response_model=schemas.Product)
+def read_product(product_id: int, db: Session = Depends(get_db)):
+    db_product = crud.get_product_by_id(db, product_id=product_id)
+    if db_product is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return db_product

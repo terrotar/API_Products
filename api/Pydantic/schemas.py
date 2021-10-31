@@ -17,9 +17,9 @@ class ProductCreate(ProductBase):
 
 class Product(ProductBase):
     id: int
-
     # Configuration to enable search like attributes instead of
     # only dict and access tables mapped in ORM SQLAlchemy
     # Product.name instead of Product["name"]
+
     class Config:
         orm_mode = True
