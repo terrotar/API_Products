@@ -13,8 +13,14 @@ Basically it's an API with integration of a database(SQLite3) and has only 1 tab
 ---
 ## How to Run
 
-After install all the requirements found inside Pipfile, just run the following command inside your terminal inside the main project's directory:
+After install all the requirements found inside Pipfile, just run the following command inside your terminal inside the main project's directory, NOT INSIDE the api folders:
 
-<code>uvicorn main:api --reload</code>
+<code>uvicorn api.main:api</code>
 
+Or that one if you gonna make some changes:
+
+<code>uvicorn api.main:api --reload</code>
+
+
+Obs: Must be outside the api directory because of imports... I changed it to fit the deploy on heroku, where you can check it out in the link: https://fastapidiego.herokuapp.com/
 ---
