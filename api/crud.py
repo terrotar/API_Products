@@ -4,11 +4,11 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 # ORM Classes/Tables
-from Database import models
+from api.Database import models
 
 
 # Pydantic Schemas
-from Pydantic import schemas
+from api.Pydantic import schemas
 
 
 # Get product by id

@@ -7,13 +7,10 @@ from fastapi.responses import RedirectResponse
 
 from sqlalchemy.orm import Session
 
-import crud
-from Database import models
-from Database.database import SessionLocal, engine
-from Pydantic import schemas
-
-
-import requests
+from . import crud
+from api.Database import models
+from api.Database.database import SessionLocal, engine
+from api.Pydantic import schemas
 
 
 # Create all tables mapped with ORM
