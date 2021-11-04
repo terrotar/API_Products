@@ -22,5 +22,5 @@ Or that one if you gonna make some changes:
 <code>uvicorn api.main:api --reload</code>
 
 
-Obs: Must be outside the api directory because of imports... I changed it to fit the deploy on heroku, where you can check it out in the link: https://fastapidiego.herokuapp.com/
+Obs: Must be outside the api directory because of imports... I changed it to fit the deploy on heroku, where you can check it out in the link: https://fastproducts.herokuapp.com/
 ---
