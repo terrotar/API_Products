@@ -2,12 +2,18 @@
 from typing import List, Optional
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
+
+
 from sqlalchemy.orm import Session
 
 import crud
 from Database import models
 from Database.database import SessionLocal, engine
 from Pydantic import schemas
+
+
+import requests
 
 
 # Create all tables mapped with ORM
@@ -35,6 +41,12 @@ def get_db():
     finally:
         # Close the connection
         db.close()
+
+
+# Heroku default home to docs swagger
+@api.get('/')
+def heroku_home():
+    return RedirectResponse(url="/docs")
 
 
 # Create object Product
