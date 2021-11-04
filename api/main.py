@@ -1,5 +1,5 @@
 
-from typing import List
+from typing import List, Optional
 
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
@@ -42,7 +42,8 @@ def get_db():
 def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)):
     db_product = crud.get_product_by_name(db, product_name=product.name)
     if db_product:
-        raise HTTPException(status_code=400, detail="Product's name already registered")
+        raise HTTPException(
+            status_code=400, detail="Product's name already registered")
     return crud.create_product(db=db, product=product)
 
 
@@ -54,9 +55,47 @@ def read_products(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 
 
 # Get a Product by id
-@api.get("/products/{product_id}", response_model=schemas.Product)
-def read_product(product_id: int, db: Session = Depends(get_db)):
+@api.get("/product/id/{product_id}", response_model=schemas.Product)
+def read_product_by_id(product_id: int, db: Session = Depends(get_db)):
     db_product = crud.get_product_by_id(db, product_id=product_id)
     if db_product is None:
         raise HTTPException(status_code=404, detail="Product not found")
     return db_product
+
+
+# Get a Product by name
+@api.get("/products/name/{product_name}", response_model=schemas.Product)
+def read_product_by_name(product_name: str, db: Session = Depends(get_db)):
+    db_product = crud.get_product_by_name(db, product_name=product_name)
+    if db_product is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return db_product
+
+
+# Delete a Product by it's id
+@api.delete("/delete/product/{product_id}", response_model=schemas.Product)
+def delete_product_by_id(product_id: int, db: Session = Depends(get_db)):
+    db_product = crud.get_product_by_id(db, product_id=product_id)
+    if db_product:
+        db_product = crud.delete_product(db, product_id=product_id)
+        return db_product
+    raise HTTPException(status_code=404, detail="Product not found")
+
+
+# Update a product by it's id
+@api.patch("/update/product/{product_id}", response_model=schemas.Product)
+def update_product(product_id: int,
+                   product_name: Optional[str] = None,
+                   product_description: Optional[str] = None,
+                   product_price: Optional[float] = None,
+                   db: Session = Depends(get_db)):
+    db_product = crud.get_product_by_id(db, product_id=product_id)
+    if db_product:
+        if product_name:
+            crud.update_product_name(db, db_product, product_name)
+        if product_description:
+            crud.update_product_description(db, db_product, product_description)
+        if product_price:
+            crud.update_product_price(db, db_product, product_price)
+        return db_product
+    raise HTTPException(status_code=404, detail="Product not found")
